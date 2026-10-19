@@ -1,0 +1,24 @@
+# Secretos
+.env
+*.key
+
+# Grabaciones (pesadas y con voz de asistentes): no se versionan
+recordings/*
+!recordings/.gitkeep
+*.mp3
+*.m4a
+*.wav
+*.mp4
+*.mov
+*.webm
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.pytest_cache/
+
+# Temporales de la transcripción
+.chunks/
+.DS_Store
