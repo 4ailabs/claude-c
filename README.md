@@ -41,6 +41,10 @@ Verifica con `./tools/check-setup.sh`.
 
 Más detalle del temario en [docs/temario.md](docs/temario.md). Resumen del cierre: [docs/conceptos-clave.md](docs/conceptos-clave.md).
 
+**Para estudiar el contenido:** [docs/estudio/README.md](docs/estudio/README.md) (los temas de las cinco clases, ordenados, con ejercicios).
+
+Estado de cada workshop y cómo retomarlo: [workshops/README.md](workshops/README.md). Resumen del evento: [docs/guia-final.md](docs/guia-final.md) y [docs/conceptos.md](docs/conceptos.md).
+
 ## Grabación y transcripción
 
 Cada sesión se graba y se transcribe con la API de Voxtral de Mistral.

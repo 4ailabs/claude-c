@@ -2,7 +2,8 @@
 
 Una tarde de cinco workshops técnicos (19 de octubre de 2026, Universidad Iberoamericana, Ciudad de México). Esta guía junta lo esencial para estudiarlo después, en orden y sin tener que releer cinco transcripciones.
 
-- **Para empezar:** lee "Las ideas que más importan" y la "Ruta de estudio".
+- **Para estudiar:** empieza por la [ruta de estudio](estudio/README.md).
+- **Para un repaso rápido:** lee "Las ideas que más importan" y la "Ruta de estudio".
 - **Para profundizar:** cada workshop tiene sus notas con marcas de tiempo en `workshops/NN-*/notas.md`.
 - **Para consultar un concepto:** [conceptos.md](conceptos.md), con 23 conceptos ordenados de lo básico a lo avanzado.
 
@@ -41,12 +42,16 @@ Cada carpeta `workshops/NN-*/` trae `notas.md`, `preguntas.md` (tres preguntas p
 
 ## Ruta de estudio (si estás aprendiendo)
 
-1. **Tool y arnés** (conceptos 1–4): lee las notas del W1 y repite el ejercicio del paso 1.
-2. **Contexto** (5–9): W2; prueba la compactación con y sin referencia.
-3. **MCP y diseño de tools** (10–17): W3; levanta el servidor y pregúntale por el Metro.
-4. **Controles y seguridad** (13, 14, 19, 21): junta lo de W3, W4 y W5.
-5. **Mundo físico y enjambres** (18–20): W4.
-6. **Auditar** (21–23): W5; repite el ejercicio de pares de CVs.
+Las cinco clases están reorganizadas **por tema**, con explicación sencilla, ejercicios sin API y preguntas de repaso, en [`docs/estudio/`](estudio/README.md):
+
+1. [El agente actúa](estudio/01-el-agente-actua.md): tools, arnés y por qué fallan.
+2. [El contexto](estudio/02-el-contexto.md): cómo se llena, se degrada y se compacta.
+3. [MCP y diseño de tools](estudio/03-mcp-y-diseno-de-tools.md).
+4. [Controles y seguridad](estudio/04-controles-y-seguridad.md).
+5. [Mundo físico y enjambres](estudio/05-mundo-fisico-y-enjambres.md).
+6. [Evaluar y auditar](estudio/06-evaluar-y-auditar.md).
+
+Con el [glosario](estudio/00-glosario.md) a mano.
 
 ## Lo que se hizo con el código
 
