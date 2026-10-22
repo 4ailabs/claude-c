@@ -39,7 +39,7 @@ Verifica con `./tools/check-setup.sh`.
 | 4 | Physical AI + MCP + Swarm Protocol | Jonathan Olvera (Hiveflow) | [workshops/04-physical-ai-mcp-swarm](workshops/04-physical-ai-mcp-swarm) |
 | 5 | Del agente al equipo | Jésica Tapia (UNESCO) | [workshops/05-del-agente-al-equipo](workshops/05-del-agente-al-equipo) |
 
-Más detalle del temario en [docs/temario.md](docs/temario.md).
+Más detalle del temario en [docs/temario.md](docs/temario.md). Resumen del cierre: [docs/conceptos-clave.md](docs/conceptos-clave.md).
 
 ## Grabación y transcripción
 
