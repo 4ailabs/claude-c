@@ -1,0 +1,414 @@
+<title>Flujo de homeopatía</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: una columna de lectura; arriba la tesis y el mapa del flujo, luego las fases como una línea de proceso con quién hace cada cosa, y al final el plan. */
+:root {
+  --bg: #f6f7f8;
+  --surface: #ffffff;
+  --ink: #17212b;
+  --muted: #5b6875;
+  --line: #d9dee3;
+  --accent: #0f6b6b;
+  --model: #6a4fb3;   /* el modelo propone */
+  --model-bg: #efeaf9;
+  --code: #1f7a4d;    /* el código verifica */
+  --code-bg: #e5f3eb;
+  --human: #a8620a;   /* el doctor decide */
+  --human-bg: #fbefdc;
+  --risk: #b3352b;
+  --risk-bg: #fbe8e6;
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11171d; --surface: #182129; --ink: #e6ebef; --muted: #9aa7b3; --line: #2b3640;
+    --accent: #4fb8b4;
+    --model: #b6a2f0; --model-bg: #2a2340;
+    --code: #6fcf9c; --code-bg: #16302a;
+    --human: #e8ad5c; --human-bg: #3a2a14;
+    --risk: #f08a80; --risk-bg: #3b1f1c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #182129; --ink: #e6ebef; --muted: #9aa7b3; --line: #2b3640;
+  --accent: #4fb8b4;
+  --model: #b6a2f0; --model-bg: #2a2340;
+  --code: #6fcf9c; --code-bg: #16302a;
+  --human: #e8ad5c; --human-bg: #3a2a14;
+  --risk: #f08a80; --risk-bg: #3b1f1c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+}
+.wrap {
+  max-width: 980px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+  display: flex; flex-direction: column; gap: 48px;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(30px, 5vw, 44px); }
+h2 { font-size: 26px; }
+h3 { font-size: 20px; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: 17px; color: var(--muted); max-width: 64ch; }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--line); padding: 1px 5px; border-radius: 4px; }
+section { display: flex; flex-direction: column; gap: 18px; }
+
+/* Cabecera */
+header { display: flex; flex-direction: column; gap: 14px; }
+.thesis {
+  font-family: var(--font-display); font-size: clamp(20px, 3vw, 26px); font-style: italic;
+  border-left: 3px solid var(--accent); padding-left: 16px; max-width: 40ch;
+}
+.status { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--human); flex: none; }
+
+/* Leyenda de actores */
+.actors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.actor { padding: 14px 16px; border-radius: 10px; display: flex; flex-direction: column; gap: 4px; }
+.actor b { font-size: 15px; }
+.actor span { font-size: 13px; color: var(--muted); }
+.a-model { background: var(--model-bg); } .a-model b { color: var(--model); }
+.a-code { background: var(--code-bg); } .a-code b { color: var(--code); }
+.a-human { background: var(--human-bg); } .a-human b { color: var(--human); }
+
+/* Mapa del flujo */
+.map-scroll { overflow-x: auto; padding-bottom: 6px; }
+.map { display: flex; align-items: stretch; gap: 0; min-width: 760px; }
+.node {
+  flex: 1 1 0; text-decoration: none; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+}
+.node:hover { border-color: var(--accent); }
+.node .id { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.node .nm { font-weight: 600; font-size: 13.5px; line-height: 1.25; }
+.bars { display: flex; gap: 3px; margin-top: auto; }
+.bar { height: 5px; flex: 1; border-radius: 3px; }
+.b-model { background: var(--model); } .b-code { background: var(--code); } .b-human { background: var(--human); } .b-none { background: var(--line); }
+.arrow { flex: none; width: 18px; display: grid; place-items: center; color: var(--muted); font-size: 14px; }
+.map-note { font-size: 13px; color: var(--muted); }
+
+/* Fases */
+.phases { display: flex; flex-direction: column; gap: 0; }
+.phase { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 0 16px; }
+.rail { display: flex; flex-direction: column; align-items: center; }
+.num {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--font-mono); font-weight: 500; font-size: 13px;
+  background: var(--surface); border: 2px solid var(--accent); color: var(--accent); flex: none;
+}
+.num.exists { border-style: dashed; color: var(--muted); border-color: var(--muted); }
+.stem { width: 2px; flex: 1; background: var(--line); margin-block: 4px; min-height: 16px; }
+.phase:last-child .stem { display: none; }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 18px 20px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0;
+}
+.card-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 12px; font-weight: 500; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.t-model { background: var(--model-bg); color: var(--model); }
+.t-code { background: var(--code-bg); color: var(--code); }
+.t-human { background: var(--human-bg); color: var(--human); }
+.t-exists { background: var(--line); color: var(--muted); }
+.does { font-size: 15px; max-width: 70ch; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.box { border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.box .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.box p { font-size: 14px; }
+.box-fix { background: var(--code-bg); } .box-fix .k { color: var(--code); }
+.box-today { background: var(--risk-bg); } .box-today .k { color: var(--risk); }
+.lesson {
+  font-size: 14px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 12px;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline;
+}
+.ws { font-family: var(--font-mono); font-size: 12px; color: var(--accent); font-weight: 500; white-space: nowrap; }
+pre.json {
+  margin: 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto;
+}
+
+/* Tabla de problemas */
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.sev { white-space: nowrap; }
+.pill { display: inline-block; font-size: 12px; font-weight: 500; padding: 2px 9px; border-radius: 999px; }
+.p-high { background: var(--risk-bg); color: var(--risk); }
+.p-mid { background: var(--human-bg); color: var(--human); }
+
+/* Plan */
+.plan { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: s; }
+.plan li {
+  counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+}
+.plan li::before {
+  content: counter(s); font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--bg); border: 1px solid var(--line); color: var(--ink);
+}
+.plan b { display: block; font-size: 15px; }
+.plan span { font-size: 13.5px; color: var(--muted); }
+.plan .when { font-size: 12px; white-space: nowrap; }
+
+/* Decisiones */
+.decisions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.decision { background: var(--human-bg); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.decision .q { font-weight: 600; }
+.decision ul { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--muted); }
+
+/* Herramientas */
+details.tools { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+details.tools summary { cursor: pointer; padding: 14px 18px; font-weight: 600; }
+.tool-list { display: flex; flex-direction: column; gap: 0; padding: 0 18px 8px; }
+.tool { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 4px 16px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.tool .what { font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding-top: 2px; }
+.warn { color: var(--risk); font-weight: 500; }
+
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 720px) {
+  .actors, .decisions { grid-template-columns: minmax(0, 1fr); }
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .phase { grid-template-columns: 40px minmax(0, 1fr); gap: 0 10px; }
+  .num { width: 34px; height: 34px; font-size: 12px; }
+  .card { padding: 16px; }
+  .tool { grid-template-columns: minmax(0, 1fr); }
+  .plan li { grid-template-columns: 34px minmax(0, 1fr); }
+  .plan .when { grid-column: 2; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .node { transition: border-color .15s ease; }
+}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">sistema_consulta · módulo 2 · homeopatía</div>
+    <h1>Flujo de homeopatía</h1>
+    <p class="thesis">El modelo propone, el código verifica y el doctor decide.</p>
+    <p class="lead">Rediseño del análisis homeopático con lo aprendido en los cinco workshops de <em>Claude for AI Engineering</em> (CDMX, 19 de octubre de 2026). Cada fase dice quién hace qué, qué falla hoy y qué control lo evita.</p>
+    <span class="status"><span class="dot"></span>Propuesta. Nada implementado todavía; espera tres decisiones del doctor.</span>
+  </header>
+
+  <section aria-labelledby="quien">
+    <h2 id="quien">Quién hace cada cosa</h2>
+    <div class="actors">
+      <div class="actor a-model"><b>El modelo propone</b><span>Lee la transcripción, traduce síntomas a rúbricas, argumenta diferenciales.</span></div>
+      <div class="actor a-code"><b>El código verifica</b><span>Comprueba citas, aplica la eliminación y la Regla de los Tres, valida la receta. Siempre da el mismo resultado.</span></div>
+      <div class="actor a-human"><b>El doctor decide</b><span>Aprueba el remedio y la receta. Nada se guarda sin su visto bueno.</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="mapa">
+    <h2 id="mapa">El flujo de un vistazo</h2>
+    <div class="map-scroll">
+      <nav class="map" aria-label="Fases del flujo">
+        <a class="node" href="#f0"><span class="id">F0</span><span class="nm">Captura y transcripción</span><span class="bars"><i class="bar b-none"></i></span></a>
+        <span class="arrow" aria-hidden="true">→</span>
+        <a class="node" href="#f1"><span class="id">F1</span><span class="nm">Depurar síntomas</span><span class="bars"><i class="bar b-model"></i><i class="bar b-code"></i></span></a>
+        <span class="arrow" aria-hidden="true">→</span>
+        <a class="node" href="#f2"><span class="id">F2</span><span class="nm">Repertorizar</span><span class="bars"><i class="bar b-model"></i><i class="bar b-code"></i></span></a>
+        <span class="arrow" aria-hidden="true">→</span>
+        <a class="node" href="#f3"><span class="id">F3</span><span class="nm">Abogado del diablo</span><span class="bars"><i class="bar b-model"></i><i class="bar b-code"></i></span></a>
+        <span class="arrow" aria-hidden="true">→</span>
+        <a class="node" href="#f4"><span class="id">F4</span><span class="nm">El doctor decide</span><span class="bars"><i class="bar b-human"></i></span></a>
+        <span class="arrow" aria-hidden="true">→</span>
+        <a class="node" href="#f5"><span class="id">F5</span><span class="nm">Guardar la receta</span><span class="bars"><i class="bar b-code"></i><i class="bar b-human"></i></span></a>
+        <span class="arrow" aria-hidden="true">↺</span>
+        <a class="node" href="#f6"><span class="id">F6</span><span class="nm">Evals</span><span class="bars"><i class="bar b-code"></i><i class="bar b-model"></i></span></a>
+      </nav>
+    </div>
+    <p class="map-note">Las barras de color dicen quién trabaja en cada fase. F6 no atiende a un paciente: mide todo el flujo cada vez que se cambia la skill.</p>
+  </section>
+
+  <section aria-labelledby="fases">
+    <h2 id="fases">Las fases, una por una</h2>
+    <div class="phases">
+
+      <article class="phase" id="f0">
+        <div class="rail"><div class="num exists">F0</div><div class="stem"></div></div>
+        <div class="card">
+          <div class="card-top"><h3>Captura y transcripción</h3><div class="tags"><span class="tag t-exists">Ya existe</span></div></div>
+          <p class="does">Audio Hijack graba la consulta, el watcher la detecta y Voxtral la transcribe con hablantes separados. El JSON queda en <code>transcripciones-entrantes/</code>.</p>
+          <div class="grid2">
+            <div class="box box-fix"><span class="k">Único cambio</span><p>El JSON es el <b>original inmutable</b>: nadie lo edita y todo lo demás apunta a él.</p></div>
+            <div class="box box-today"><span class="k">Hoy</span><p>Se usa como texto de entrada y luego se pierde de vista; nada lo vuelve a consultar.</p></div>
+          </div>
+          <p class="lesson"><span class="ws">W2 · Alejandro Martínez</span>Compactar con referencia: guardar el original y dejar un puntero, porque todo resumen pierde detalles.</p>
+        </div>
+      </article>
+
+      <article class="phase" id="f1">
+        <div class="rail"><div class="num">F1</div><div class="stem"></div></div>
+        <div class="card">
+          <div class="card-top"><h3>Depurar síntomas</h3><div class="tags"><span class="tag t-model">Modelo extrae</span><span class="tag t-code">Código verifica</span></div></div>
+          <p class="does">Un subagente lee solo la transcripción de esta consulta y saca cada síntoma con la frase literal del paciente, su marca de tiempo y su clase: ✅ repertorizable, ⚠️ informativo o 🚫 excluir.</p>
+<pre class="json">{ "sintoma": "peor por la tarde",
+  "cita": "ya como a las cinco me siento fatal",
+  "t": "00:12:31", "hablante": "paciente",
+  "clase": "repertorizable", "nivel": 2 }</pre>
+          <div class="grid2">
+            <div class="box box-fix"><span class="k">Control en código</span><p><code>validar_caso</code> busca cada cita en la transcripción. Si no aparece tal cual, el síntoma baja a ⚠️ y se avisa.</p></div>
+            <div class="box box-today"><span class="k">Hoy</span><p>"¿Lo dijo este paciente, en esta consulta?" depende de que el modelo se acuerde de preguntárselo.</p></div>
+          </div>
+          <p class="lesson"><span class="ws">W2</span>El contexto se degrada desde unos 128 mil tokens; con el resumen y punteros bajó de ~130 mil a ~5 mil sin perder el dato. Para pacientes de retorno, un subagente responde sobre el historial en vez de cargarlo entero.</p>
+        </div>
+      </article>
+
+      <article class="phase" id="f2">
+        <div class="rail"><div class="num">F2</div><div class="stem"></div></div>
+        <div class="card">
+          <div class="card-top"><h3>Repertorizar</h3><div class="tags"><span class="tag t-model">Modelo elige rúbricas</span><span class="tag t-code">Código elimina</span></div></div>
+          <p class="does">El modelo traduce cada síntoma ✅ a una rúbrica del repertorio. El código aplica la eliminación: qué remedio sobrevive cada filtro, cuál cae por contradicción modal y si se cumple la Regla de los Tres.</p>
+          <div class="grid2">
+            <div class="box box-fix"><span class="k">Tools, y solo estas</span><p><code>buscar_rubrica(texto)</code>, <code>remedios_de_rubrica(id)</code> y <code>eliminar(...)</code>. Si falta un nivel, <code>eliminar</code> responde qué falta y la salida es "pedir más datos".</p></div>
+            <div class="box box-today"><span class="k">Hoy</span><p>No hay repertorio en el repo. El modelo repertoriza de memoria, lo que choca con "nunca inventar, solo usar las fuentes".</p></div>
+          </div>
+          <p class="lesson"><span class="ws">W3 · Dante Bazaldua</span>Una tool por intención, argumentos planos, respuestas cortas y errores que enseñan a corregirse. <span class="ws">W5</span>"Lo que no dice, el LLM lo va a inventar a menos que se lo prohíbas."</p>
+        </div>
+      </article>
+
+      <article class="phase" id="f3">
+        <div class="rail"><div class="num">F3</div><div class="stem"></div></div>
+        <div class="card">
+          <div class="card-top"><h3>Abogado del diablo</h3><div class="tags"><span class="tag t-model">Modelo ataca</span><span class="tag t-code">Código audita</span></div></div>
+          <p class="does">Otro subagente recibe el caso y el candidato, pero no el razonamiento de F2, para no heredar su sesgo. Busca el síntoma que separa al candidato de sus diferenciales, revisa las confirmaciones físicas de la tabla de policrestos y entrega el semáforo 🟢 🟡 🔴.</p>
+          <div class="grid2">
+            <div class="box box-fix"><span class="k">Control en código</span><p>La bitácora registra qué tools se llamaron. Si F3 no corrió, el análisis no puede salir 🟢.</p></div>
+            <div class="box box-today"><span class="k">Hoy</span><p>El mismo agente propone y se revisa a sí mismo; el hook ya tiene que recordarle el sesgo hacia Natrum muriaticum.</p></div>
+          </div>
+          <p class="lesson"><span class="ws">W5 · Jésica Tapia</span>Especialistas que no comparten todo el contexto, y auditar qué herramientas llamó el orquestador, porque puede decidir saltarse a los especialistas.</p>
+        </div>
+      </article>
+
+      <article class="phase" id="f4">
+        <div class="rail"><div class="num">F4</div><div class="stem"></div></div>
+        <div class="card">
+          <div class="card-top"><h3>El doctor decide</h3><div class="tags"><span class="tag t-human">Doctor</span></div></div>
+          <p class="does">Se le presenta una tabla: candidato y diferenciales, síntomas a favor y en contra (cada uno con su cita y minuto), el semáforo y las preguntas para la próxima consulta. Él aprueba, cambia o pide más datos.</p>
+          <div class="grid2">
+            <div class="box box-fix"><span class="k">Regla</span><p>Nada pasa a F5 sin aprobación explícita.</p></div>
+            <div class="box box-today"><span class="k">Hoy</span><p>"El doctor decide" está en los principios, pero no hay un paso que lo haga obligatorio antes de guardar.</p></div>
+          </div>
+          <p class="lesson"><span class="ws">W4 · Jonathan Olvera</span>Cuando la acción tiene consecuencias, humano en el loop y bitácora. "El modelo puede equivocarse."</p>
+        </div>
+      </article>
+
+      <article class="phase" id="f5">
+        <div class="rail"><div class="num">F5</div><div class="stem"></div></div>
+        <div class="card">
+          <div class="card-top"><h3>Guardar la receta</h3><div class="tags"><span class="tag t-code">Tool cerrada</span><span class="tag t-human">Confirmación</span></div></div>
+          <p class="does">Una sola tool, <code>guardar_receta(...)</code>, en un MCP local. Su esquema no tiene <code>general_notes</code> ni <code>next_appointment</code>: no se pueden llenar porque no existen. <code>instructions</code> acepta solo horario y forma de toma.</p>
+          <div class="grid2">
+            <div class="box box-fix"><span class="k">Controles en código</span><p>Esquema cerrado, idempotencia (un hash evita duplicar la receta), confirmación antes de escribir, Supabase en solo lectura para todo lo demás y bitácora con hash.</p></div>
+            <div class="box box-today"><span class="k">Hoy</span><p>La skill permite <code>execute_sql</code> libre. La regla de <code>general_notes</code> está "repetida 10+ veces" y el script deja pasar <code>next_appointment</code>.</p></div>
+          </div>
+          <p class="lesson"><span class="ws">W3</span>"No expongas algo como 'ejecutar SQL'": los controles van en el código y son deterministas. <span class="ws">W1 · Carlos Haro</span>La llamada válida pero semánticamente peligrosa.</p>
+        </div>
+      </article>
+
+      <article class="phase" id="f6">
+        <div class="rail"><div class="num">F6</div><div class="stem"></div></div>
+        <div class="card">
+          <div class="card-top"><h3>Evals</h3><div class="tags"><span class="tag t-code">Reglas</span><span class="tag t-model">Juez LLM</span></div></div>
+          <p class="does">De 10 a 20 casos anonimizados con desenlace conocido, más casos sintéticos por pares. Se corren antes y después de cada cambio a la skill, para saber si mejora o empeora.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Qué se mide</th><th>Cómo</th></tr></thead>
+              <tbody>
+                <tr><td>Síntomas ✅ con cita verificable</td><td>Código</td></tr>
+                <tr><td>Remedio nombrado sin cumplir la Regla de los Tres</td><td>Código</td></tr>
+                <tr><td>Recetas con un campo prohibido (debe ser 0)</td><td>Código</td></tr>
+                <tr><td>Caso con solo síntomas comunes: debe salir 🔴</td><td>Código</td></tr>
+                <tr><td><b>Par por sexo:</b> mismo caso, cambia solo hombre/mujer. Si Sepia aparece solo en la versión mujer, hay sesgo</td><td>Código</td></tr>
+                <tr><td><b>Par por termicidad:</b> el remedio debe cambiar si la modalidad lo contradice</td><td>Código</td></tr>
+                <tr><td>Calidad del diferencial</td><td>Juez LLM con rúbrica</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="lesson"><span class="ws">W5</span>La prueba de los CVs idénticos que solo cambian hombre/mujer. <span class="ws">W1</span>Medir la tasa de error por categoría. <span class="ws">W3</span>Incluir un caso negativo que no debe usar la tool.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section aria-labelledby="hoy">
+    <h2 id="hoy">Lo que falla hoy</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Problema</th><th>Dónde</th><th>Gravedad</th><th>Fase que lo resuelve</th></tr></thead>
+        <tbody>
+          <tr><td>Tres instrucciones que se contradicen: mental o físico primero, bloquear o prescribir sin datos, 2 o 3 diferenciales</td><td><code>02_repertorizacion_protocolo.md</code>, <code>02_homeopatia.md</code>, hook</td><td class="sev"><span class="pill p-high">Alta</span></td><td>Paso 1 del plan</td></tr>
+          <tr><td>Repertorización de memoria, sin repertorio ni materia médica</td><td>Skill completa</td><td class="sev"><span class="pill p-high">Alta</span></td><td>F2</td></tr>
+          <tr><td>SQL libre para guardar recetas</td><td><code>SKILL.md</code>, fase 4</td><td class="sev"><span class="pill p-high">Alta</span></td><td>F5</td></tr>
+          <tr><td><code>next_appointment</code> pasa sin control</td><td><code>save_prescription_to_panel.cjs</code>, línea 121</td><td class="sev"><span class="pill p-mid">Media</span></td><td>F5</td></tr>
+          <tr><td>La regla anti-contaminación depende de la memoria del modelo</td><td>Protocolo, fase 1</td><td class="sev"><span class="pill p-mid">Media</span></td><td>F1</td></tr>
+          <tr><td>Nada mide si un cambio mejora o empeora</td><td>—</td><td class="sev"><span class="pill p-mid">Media</span></td><td>F6</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="plan">
+    <h2 id="plan">Orden de implementación</h2>
+    <p class="lead">Lo barato y de más efecto primero. Los subagentes al final: los ponentes del W2 y el W5 coincidieron en que son caros y no son para todo.</p>
+    <ol class="plan">
+      <li><div><b>Unificar las tres instrucciones</b><span>Un solo flujo en el módulo 02. Necesita las decisiones de abajo.</span></div><span class="tag t-human when">Espera al doctor</span></li>
+      <li><div><b>Cerrar la receta</b><span>Corregir <code>next_appointment</code> y quitar <code>execute_sql</code> de la skill; después, <code>guardar_receta</code> en FastMCP.</span></div><span class="tag t-code when">Listo para empezar</span></li>
+      <li><div><b>Evals y línea base</b><span>Casos anonimizados y pares en promptfoo, corridos sobre la skill actual.</span></div><span class="tag t-code when">Listo para empezar</span></li>
+      <li><div><b>Citas verificables</b><span><code>caso.json</code> y <code>validar_caso</code>.</span></div><span class="tag t-exists when">Después</span></li>
+      <li><div><b>Repertorio como fuente</b><span>Kent en SQLite con un FastMCP propio, u OOREP en línea.</span></div><span class="tag t-human when">Espera al doctor</span></li>
+      <li><div><b>Subagentes</b><span>Solo si las evals muestran que una sola pasada no basta.</span></div><span class="tag t-exists when">Si hace falta</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="decisiones">
+    <h2 id="decisiones">Decisiones del doctor</h2>
+    <div class="decisions">
+      <div class="decision"><span class="q">¿Por dónde se empieza?</span><ul><li>Generales mentales, como dice el protocolo (Kent)</li><li>Síntomas físicos, como dice el hook</li></ul></div>
+      <div class="decision"><span class="q">Si no se cumple la Regla de los Tres…</span><ul><li>Bloquear: 🔴 y pedir más datos</li><li>Permitir 🟡 con potencia baja y observar</li></ul></div>
+      <div class="decision"><span class="q">¿Qué repertorio?</span><ul><li>Local: los datos no salen de la Mac</li><li>OOREP en línea: más repertorios, el texto de los síntomas sale del equipo</li></ul></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="herramientas">
+    <h2 id="herramientas">Herramientas encontradas</h2>
+    <details class="tools" open>
+      <summary>Ocho piezas, con lo que falta verificar</summary>
+      <div class="tool-list">
+        <div class="tool"><span class="what">Repertorio MCP</span><span><a href="https://mcpmarket.com/server/oorep">OOREP MCP Server</a>: Kent, Boger, Hering y materias médicas de <a href="https://www.oorep.com/">OOREP</a>; se instala con <code>npx -y oorep-mcp</code>. <span class="warn">Sin verificar</span>: licencia, tools y si consulta el servidor público.</span></div>
+        <div class="tool"><span class="what">Repertorio local</span><span><a href="https://github.com/su4532/kent-repertory-explorer">kent-repertory-explorer</a>: Kent expandido en SQLite y JSON, con el texto de página para rastrear cada rúbrica. No certifica la exactitud del OCR.</span></div>
+        <div class="tool"><span class="what">Repertorio local</span><span><a href="https://github.com/drwjkirkpatrick-web/oorep-local-repertory">oorep-local-repertory</a>: repertorio offline sobre datos de OOREP.</span></div>
+        <div class="tool"><span class="what">Fuente original</span><span><a href="https://archive.org/details/kents-repertory_202403">Kent's Repertory (1899)</a> en Internet Archive, de dominio público.</span></div>
+        <div class="tool"><span class="what">Materia médica</span><span><a href="https://digirepo.nlm.nih.gov/catalog/nlm:nlmuid-101302367-bk">NLM Digital Collections</a> y <a href="https://wellcomecollection.org/works/pz2urj6p">Hering, <em>Condensed materia medica</em></a>, de dominio público. No hay copia verificada de Boericke.</span></div>
+        <div class="tool"><span class="what">Supabase seguro</span><span><a href="https://glama.ai/mcp/servers/@supabase-community/mcp-supabase/blob/48e3ed1504b1c21801084045c37d967981509925/README.md">Supabase MCP</a> con <code>--read-only</code> y solo las features necesarias. <span class="warn">Confirmar</span> en la documentación oficial qué tools bloquea.</span></div>
+        <div class="tool"><span class="what">Bloqueos</span><span>Subagentes de Claude Code con lista de tools y hooks <code>PreToolUse</code> (<a href="https://docs.claude.com/en/api/agent-sdk/permissions">permisos</a>, <a href="https://code.claude.com/docs/en/tools-reference">tools</a>). Hubo un <a href="https://claudeissues.com/issue/43772-subagents-with-bypasspermissions-ignore-pretooluse-hooks-unauthorized-commands-w">bug ya cerrado</a> con <code>bypassPermissions</code>.</span></div>
+        <div class="tool"><span class="what">Evals</span><span><a href="https://www.datacamp.com/tutorial/promptfoo-tutorial">promptfoo</a> con <code>llm-rubric</code> como juez y una <a href="https://skills.cat/skills/daymade/claude-code-skills/promptfoo-evaluation">skill para Claude Code</a>.</span></div>
+      </div>
+    </details>
+  </section>
+
+  <footer>Fuente: <code>aplicaciones/sistema-consulta-homeopatia.md</code> en el repo <code>claude-c</code>, con las notas de los cinco workshops. Las marcas de tiempo citadas están en <code>workshops/*/notas.md</code>. Esta página no contiene datos de pacientes.</footer>
+</div>
