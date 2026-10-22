@@ -1,0 +1,13 @@
+{
+  "model": "voxtral-mini-latest",
+  "text": "EJEMPLO FICTICIO, no es un paciente real.",
+  "segments": [
+    {"text": "Desde hace tres semanas me duele la cabeza del lado derecho.", "start": 2.0, "end": 6.1, "speaker_id": "speaker_2"},
+    {"text": "Empeora como a las cuatro de la tarde y se me quita si me aprieto la cabeza.", "start": 6.4, "end": 11.0, "speaker_id": "speaker_2"},
+    {"text": "Soy muy friolenta, siempre ando con suéter aunque haga calor.", "start": 11.5, "end": 15.2, "speaker_id": "speaker_2"},
+    {"text": "Cuando me preocupo no quiero que nadie me hable, prefiero estar sola.", "start": 15.6, "end": 20.0, "speaker_id": "speaker_2"},
+    {"text": "Algo raro es que con el dolor me da mucha hambre.", "start": 20.3, "end": 23.4, "speaker_id": "speaker_2"},
+    {"text": "Estoy tomando ibuprofeno desde hace una semana.", "start": 23.8, "end": 26.5, "speaker_id": "speaker_2"},
+    {"text": "Y me salieron unos moretones en las piernas.", "start": 26.9, "end": 29.6, "speaker_id": "speaker_2"}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "paciente": "Ejemplo ficticio",
+  "consulta": "2026-01-01",
+  "fuente": "ejemplo/transcripcion.json",
+  "medicamentos": ["ibuprofeno"],
+  "sintomas": [
+    {"sintoma": "Quiere estar sola cuando se preocupa", "cita": "no quiero que nadie me hable, prefiero estar sola", "t": "00:15", "clase": "repertorizable", "nivel": 1, "motivo": "mental"},
+    {"sintoma": "Friolenta", "cita": "Soy muy friolenta", "t": "00:11", "clase": "repertorizable", "nivel": 2, "motivo": "general: termicidad"},
+    {"sintoma": "Hambre durante la cefalea", "cita": "con el dolor me da mucha hambre", "t": "00:20", "clase": "repertorizable", "nivel": 3, "motivo": "concomitante inesperado"},
+    {"sintoma": "Cefalea derecha, peor 4 pm, mejor por presión", "cita": "Empeora como a las cuatro de la tarde", "t": "00:06", "clase": "repertorizable", "nivel": 4, "motivo": "particular con horario y modalidad"},
+    {"sintoma": "Moretones en las piernas", "cita": "me salieron unos moretones en las piernas", "t": "00:26", "clase": "excluir", "nivel": null, "motivo": "posible efecto del ibuprofeno"}
+  ]
+}

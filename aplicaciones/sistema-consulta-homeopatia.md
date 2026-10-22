@@ -4,7 +4,7 @@ Propuesta para el módulo 2 (homeopatía) de la skill `sistema-consulta` del rep
 `4ailabs/sistema_consulta`. Aplica la tesis del evento: **el modelo propone, la
 aplicación ejecuta, y eso se mide.** Las decisiones clínicas siguen siendo del doctor.
 
-Estado: **propuesta**. Nada de esto está implementado todavía.
+Estado: **propuesta en marcha**. F1 y la Regla de los Tres ya funcionan en código; ver [`flujo-homeopatia/README.md`](flujo-homeopatia/README.md) para correrlo.
 
 ## El problema que resuelve
 

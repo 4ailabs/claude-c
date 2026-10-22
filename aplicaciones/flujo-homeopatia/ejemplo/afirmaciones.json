@@ -1,0 +1,5 @@
+[
+  {"dato": "Friolenta", "patron": "friolent"},
+  {"dato": "Sed de bebidas frías", "patron": "\\b(sed|agua fr[ií]a|helad)"},
+  {"dato": "Peor por la tarde", "patron": "tarde"}
+]
