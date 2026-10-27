@@ -11,7 +11,8 @@ Nota práctica para analizar una consulta con el flujo nuevo: **el modelo propon
 
 | Archivo | Para qué |
 |---|---|
-| `validar_caso.py` | El control en código de F1 y F3: verifica cada cita contra la transcripción y aplica la Regla de los Tres. Solo usa Python, sin dependencias ni modelos. |
+| `validar_caso.py` | El control en código de F1v (versión TRÍPODE v0.2, con las correcciones de la auditoría del 27-oct-2026): verifica que cada cita exista **y que la haya dicho el paciente**, infiere el `origen` (baja a `cerrada` lo inducido), aplica la Regla de los Tres solo con datos firmes, la revisa por candidato y escribe `caso_validado.json` sin nombres de remedios. Solo usa Python, sin dependencias ni modelos. |
+| `revisar_preguntas.py` | Rechaza preguntas con nombres de remedios, de sí/no, con menús "por ejemplo" o de un solo polo. `validar_caso.py` lo usa para inferir el origen. Sin la base del repertorio usa una lista de respaldo. |
 | `ejemplo/transcripcion.json` | Transcripción ficticia en el formato de Voxtral. |
 | `ejemplo/caso.json` | El caso depurado de ese ejemplo: el formato que debe producir el paso 2. |
 | `ejemplo/afirmaciones.json` | Opcional: datos de un análisis previo para comprobar si están en la grabación. |
@@ -22,7 +23,8 @@ Pruébalo con el ejemplo:
 python3 validar_caso.py ejemplo/caso.json ejemplo/transcripcion.json ejemplo/afirmaciones.json
 ```
 
-Sale con código `0` si ya se pueden nombrar candidatos y `1` si hay que pedir más datos.
+Al final dice «Se pueden nombrar candidatos» o «🔴 Pedir más datos». Este código es una copia; el original vive en
+`Sistema-consulta/protocolos/tripode/herramientas/` (repo privado), junto con `decidir.py` y el resto de TRÍPODE.
 
 ## El proceso, paso a paso
 
@@ -62,19 +64,25 @@ Reglas para cada síntoma de `caso.json`:
   - `informativo`: común a la enfermedad, sin modalidad, o un antecedente.
   - `excluir`: posible efecto de un medicamento, o un dato de otra consulta.
 - `nivel`: del 1 al 5, según la jerarquía de Kent del protocolo.
+- `origen`: `espontaneo`, `abierta`, `dos_polos` u `observado` (firmes); `cerrada` (sí/no, menú, palabra que puso el doctor:
+  puede descartar un remedio, nunca sostenerlo); `expediente` o `formulario` (no firmes hasta reconfirmarlos).
+- `contexto`: obligatorio en los mentales (nivel 1) para que cuenten.
 - `medicamentos`: todo lo que tome el paciente, porque decide qué se excluye.
 
-Si un dato viene de lo que el paciente dijo **después** de la grabación (por chat o en persona), se anota con `"t": "fuera de grabación"` y con la fuente en `motivo`. El validador lo va a marcar `SIN CITA`, y eso es lo correcto: un dato sin fuente no debe decidir el remedio.
+Si un dato viene de lo que el paciente escribió **después** de la grabación (por chat), guarda el mensaje como una
+transcripción más (pares pregunta/respuesta, la pregunta con el hablante del doctor) y pon `"archivo"` en el síntoma. Así
+la cita se verifica igual. Cuidado: si ese archivo no trae hablantes, toda cita sale OK; sin hablantes, trátalo como no firme.
 
 ### 3. Verificar el caso (control en código)
 
 ```bash
 python3 ~/claude-c/aplicaciones/flujo-homeopatia/validar_caso.py \
-  pacientes/AAAA/MM/Nombre/caso.json \
-  transcripciones-entrantes/<archivo>.json
+  /ruta/temporal/caso.json \
+  transcripciones-entrantes/<archivo>.json --paciente speaker_2
 ```
 
-- Cada síntoma `SIN CITA` que estaba como repertorizable baja a informativo.
+- El id del paciente cambia entre grabaciones: pásalo con `--paciente` o en `"hablantes"` dentro de `caso.json`.
+- Cada síntoma `SIN CITA` o `DICHA POR EL DOCTOR` que estaba como repertorizable baja a informativo.
 - Si la Regla de los Tres no se cumple (✘), el resultado es **🔴 pedir más datos**: se vuelve a preguntar al paciente y no se nombra ningún remedio.
 
 ### 4. Repertorizar (F2)
@@ -113,10 +121,11 @@ El reporte dice qué datos aparecen en la grabación y cuáles no. Así se prob�
 
 | Pieza | Estado |
 |---|---|
-| F1 `caso.json` + `validar_caso.py` | ✅ Funciona; probado con un caso real y uno negativo |
-| Regla de los Tres en código | ✅ Funciona |
-| F2 con repertorio real | ⏳ Falta elegir y cargar el repertorio |
-| F3 en contexto separado | ⏳ Manual (conversación nueva); falta el subagente |
+| F1 `caso.json` + `validar_caso.py` | ✅ v0.2: hablante, origen, Regla de los Tres por candidato |
+| Regla de los Tres en código | ✅ Por caso y por candidato (la lista de candidatos aún se arma a mano) |
+| F2 con repertorio real | ✅ Kent 1897 local en SQLite (repo privado); la auditoría encontró defectos del OCR por reparar |
+| F3 en contexto separado | ✅ Subagente abogado del diablo (repo privado) |
+| Lección de la auditoría (27-oct) | Con 2 juegos de rúbricas el líder cambia según quién rubrica: falta probar todas las alternativas en código y una regla de parada |
 | F5 `guardar_receta` con esquema cerrado | ⏳ Falta; corregir `next_appointment` en el script actual |
 | F6 evals | ⏳ Falta armar los casos anonimizados y los pares |
 | Decisiones del doctor | ⏳ Mental o físico primero · bloquear o 🟡 · qué repertorio |
